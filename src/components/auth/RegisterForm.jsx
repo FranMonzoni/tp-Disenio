@@ -1,13 +1,40 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { loginSuccess, loginFailure } from '../../features/auth/authSlice'
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     usuario: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   })
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const validateForm = () => {
+    if (!formData.email || !formData.usuario || !formData.password || !formData.confirmPassword) {
+      throw new Error('Todos los campos son obligatorios')
+    }
+
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      throw new Error('El formato del email no es válido')
+    }
+
+    if (formData.usuario.length < 3) {
+      throw new Error('El nombre de usuario debe tener al menos 3 caracteres')
+    }
+
+    if (formData.password.length < 6) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres')
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      throw new Error('Las contraseñas no coinciden')
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -15,16 +42,32 @@ const RegisterForm = () => {
       ...prev,
       [name]: value
     }))
+    setError('') // Limpiar error al modificar el formulario
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // Aquí irá la lógica de registro
+    setError('')
+    
     try {
-      // Implementar llamada a la API
-      navigate('/login')
+      validateForm()
+      
+      // Simulamos un registro exitoso
+      const userData = {
+        id: Date.now(),
+        email: formData.email,
+        username: formData.usuario
+      }
+      
+      // Actualizamos el estado de autenticación
+      dispatch(loginSuccess(userData))
+      
+      // Redirigimos al dashboard
+      navigate('/dashboard')
     } catch (error) {
       console.error('Error en el registro:', error)
+      dispatch(loginFailure(error.message))
+      setError(error.message)
     }
   }
 
@@ -34,6 +77,11 @@ const RegisterForm = () => {
         <div>
           <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">Registrate</h2>
         </div>
+        {error && (
+          <div className="rounded-md bg-red-50 p-4">
+            <div className="text-sm text-red-700">{error}</div>
+          </div>
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="-space-y-px rounded-md shadow-sm">
             <div>
@@ -63,15 +111,28 @@ const RegisterForm = () => {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Password</label>
+              <label htmlFor="password" className="sr-only">Contraseña</label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="relative block w-full rounded-b-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600"
+                className="relative block w-full border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600"
                 placeholder="Contraseña"
                 value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="confirmPassword" className="sr-only">Confirmar Contraseña</label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                className="relative block w-full rounded-b-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600"
+                placeholder="Confirmar Contraseña"
+                value={formData.confirmPassword}
                 onChange={handleChange}
               />
             </div>
