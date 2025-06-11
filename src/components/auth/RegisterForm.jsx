@@ -52,17 +52,34 @@ const RegisterForm = () => {
     try {
       validateForm()
       
-      // Simulamos un registro exitoso
-      const userData = {
-        id: Date.now(),
-        email: formData.email,
-        username: formData.usuario
+      // Obtener usuarios existentes o inicializar array
+      const existingUsers = JSON.parse(localStorage.getItem('users')) || []
+      
+      // Verificar si el usuario ya existe
+      if (existingUsers.some(user => user.usuario === formData.usuario)) {
+        throw new Error('El nombre de usuario ya está en uso')
       }
       
-      // Actualizamos el estado de autenticación
-      dispatch(loginSuccess(userData))
+      if (existingUsers.some(user => user.email === formData.email)) {
+        throw new Error('El email ya está registrado')
+      }
+
+      // Crear nuevo usuario
+      const newUser = {
+        id: Date.now(),
+        email: formData.email,
+        usuario: formData.usuario,
+        password: formData.password,
+        createdAt: new Date().toISOString()
+      }
       
-      // Redirigimos al dashboard
+      // Guardar en localStorage
+      localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]))
+      
+      // Actualizar estado de autenticación
+      dispatch(loginSuccess(newUser))
+      
+      // Redirigir al dashboard
       navigate('/dashboard')
     } catch (error) {
       console.error('Error en el registro:', error)
@@ -145,6 +162,14 @@ const RegisterForm = () => {
             >
               Registrarse
             </button>
+          </div>
+          <div className="text-center mt-4">
+            <a
+              href="/login"
+              className="font-medium text-green-600 hover:text-green-500"
+            >
+              ¿Ya tienes cuenta? Inicia sesión aquí
+            </a>
           </div>
         </form>
       </div>
