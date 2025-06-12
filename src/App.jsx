@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import LoginForm from './components/auth/LoginForm'
 import RegisterForm from './components/auth/RegisterForm'
-import Dashboard from './components/dashboard/Dashboard'
+import InitialBalance from './components/balance/InitialBalance'
+import CategoryList from './components/categories/CategoryList'
+import CreateCategory from './components/categories/CreateCategory'
+import ExpenseEntry from './components/expenses/ExpenseEntry'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 
 function App() {
@@ -12,10 +15,34 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route 
-          path="/dashboard" 
+          path="/initial-balance" 
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <InitialBalance />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/categories" 
+          element={
+            <ProtectedRoute>
+              <CategoryList />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/create-category" 
+          element={
+            <ProtectedRoute>
+              <CreateCategory />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/expense/:categoryId" 
+          element={
+            <ProtectedRoute>
+              <ExpenseEntry />
             </ProtectedRoute>
           } 
         />

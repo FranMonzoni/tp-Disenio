@@ -64,8 +64,9 @@ const RegisterForm = () => {
         throw new Error('El email ya está registrado')
       }
 
-      // Crear nuevo usuario
+      // Crear nuevo usuario con uid
       const newUser = {
+        uid: `uid-${Date.now()}`,
         id: Date.now(),
         email: formData.email,
         usuario: formData.usuario,
@@ -79,8 +80,8 @@ const RegisterForm = () => {
       // Actualizar estado de autenticación
       dispatch(loginSuccess(newUser))
       
-      // Redirigir al dashboard
-      navigate('/dashboard')
+      // Redirigir a saldo inicial
+      navigate('/initial-balance')
     } catch (error) {
       console.error('Error en el registro:', error)
       dispatch(loginFailure(error.message))

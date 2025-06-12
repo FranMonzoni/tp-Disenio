@@ -10,6 +10,16 @@ function Dashboard() {
   const balance = useSelector(state => state.expenses.balance)
   const expenses = useSelector(state => state.expenses.expenses)
 
+  if (!user || !user.uid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded shadow text-center">
+          <p className="text-red-600 font-semibold mb-4">Debes iniciar sesión para ver el dashboard.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-7xl mx-auto space-y-6">

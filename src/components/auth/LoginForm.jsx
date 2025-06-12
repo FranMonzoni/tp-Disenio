@@ -9,6 +9,7 @@ const LoginForm = () => {
     password: ''
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -18,38 +19,36 @@ const LoginForm = () => {
       ...prev,
       [name]: value
     }))
-    setError('') // Limpiar error cuando el usuario modifica el formulario
-  }
-
-  const validateUser = (usuario, password) => {
-    // Recuperar usuarios del localStorage
-    const users = JSON.parse(localStorage.getItem('users')) || []
-    return users.find(user => 
-      user.usuario === usuario && user.password === password
-    )
+    setError('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!formData.usuario.trim() || !formData.password.trim()) {
+      setError('Todos los campos son obligatorios')
+      return
+    }
+    setLoading(true)
     dispatch(loginStart())
-
     try {
-      if (!formData.usuario || !formData.password) {
-        throw new Error('Por favor, completa todos los campos')
+      const users = JSON.parse(localStorage.getItem('users')) || []
+      const user = users.find(u => 
+        u.usuario === formData.usuario && 
+        u.password === formData.password
+      )
+      if (user && user.uid) {
+        dispatch(loginSuccess(user))
+        setLoading(false)
+        navigate('/initial-balance')
+      } else {
+        dispatch(loginFailure('Credenciales inválidas'))
+        setError('Usuario o contraseña incorrectos')
+        setLoading(false)
       }
-
-      const user = validateUser(formData.usuario, formData.password)
-      
-      if (!user) {
-        throw new Error('Usuario o contraseña incorrectos')
-      }
-
-      // Login exitoso
-      dispatch(loginSuccess(user))
-      navigate('/dashboard')
     } catch (error) {
       dispatch(loginFailure(error.message))
-      setError(error.message)
+      setError('Error al iniciar sesión')
+      setLoading(false)
     }
   }
 
@@ -79,6 +78,7 @@ const LoginForm = () => {
                 placeholder="Usuario"
                 value={formData.usuario}
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
             <div>
@@ -92,16 +92,17 @@ const LoginForm = () => {
                 placeholder="Contraseña"
                 value={formData.password}
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
           </div>
-
           <div>
             <button
               type="submit"
               className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              disabled={loading}
             >
-              Iniciar Sesión
+              {loading ? 'Cargando...' : 'Iniciar Sesión'}
             </button>
           </div>
           <div className="text-center mt-4">

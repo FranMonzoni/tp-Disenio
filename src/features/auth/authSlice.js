@@ -18,7 +18,7 @@ const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.loading = false
       state.isAuthenticated = true
-      state.user = action.payload
+      state.user = { ...action.payload, uid: action.payload.uid || `uid-${Date.now()}` }
       state.error = null
     },
     loginFailure: (state, action) => {
