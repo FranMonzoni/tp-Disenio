@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { setBalance, setExpenses, setCustomCategories } from '../../features/expenses/expenseSlice'
 import { db } from '../../firebase'
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore";
+import BotonInicio from '../BotonInicio'
 
 function InitialBalance() {
   const [amount, setAmount] = useState('')
@@ -65,15 +66,15 @@ function InitialBalance() {
     if (amount > 0) {
       dispatch(setBalance({
         amount: parseFloat(amount),
-        currency
+        currency,
+        saldoInicial: parseFloat(amount)
       }))
       try {
-        await addDoc(collection(db, "users", user.uid, "expenses"), {
-          description: 'Initial Balance',
+        // Guardar en Firestore
+        await setDoc(doc(db, 'users', user.uid, 'profile', 'balance'), {
           amount: parseFloat(amount),
-          categoryId: 'initial',
-          date: new Date(),
-          createdAt: new Date()
+          currency,
+          saldoInicial: parseFloat(amount)
         })
         navigate('/categories')
       } catch (err) {
@@ -104,6 +105,7 @@ function InitialBalance() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <BotonInicio />
       <div className="max-w-md w-full bg-white rounded-lg shadow p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center text-gray-900">Carga tu saldo disponible</h1>
         <form onSubmit={handleSubmit} className="space-y-4">

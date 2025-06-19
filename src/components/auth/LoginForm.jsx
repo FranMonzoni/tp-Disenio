@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginStart, loginSuccess, loginFailure } from '../../features/auth/authSlice'
+import { db } from '../../firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { setBalance } from '../../features/expenses/expenseSlice'
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -38,8 +41,18 @@ const LoginForm = () => {
       )
       if (user && user.uid) {
         dispatch(loginSuccess(user))
-        setLoading(false)
-        navigate('/initial-balance')
+        // Consultar saldo en Firestore
+        const balanceRef = doc(db, 'users', user.uid, 'profile', 'balance')
+        const balanceSnap = await getDoc(balanceRef)
+        if (balanceSnap.exists()) {
+          const { amount, currency, saldoInicial } = balanceSnap.data()
+          dispatch(setBalance({ amount, currency, saldoInicial }))
+          setLoading(false)
+          navigate('/inicio')
+        } else {
+          setLoading(false)
+          navigate('/initial-balance')
+        }
       } else {
         dispatch(loginFailure('Credenciales inválidas'))
         setError('Usuario o contraseña incorrectos')

@@ -6,6 +6,7 @@ import { Pie } from 'react-chartjs-2'
 import { db } from '../../firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import BotonInicio from '../BotonInicio'
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function ExpenseEntry() {
@@ -78,6 +79,7 @@ function ExpenseEntry() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      <BotonInicio />
       <div className="max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center text-green-600 mb-6">Analizador de gastos</h1>
         <h2 className="text-xl font-semibold text-center text-gray-800 mb-6">

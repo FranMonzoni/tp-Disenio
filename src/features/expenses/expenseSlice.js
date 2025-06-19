@@ -6,6 +6,7 @@ const initialState = {
   categories: defaultCategories,
   customCategories: [],
   balance: 0,
+  saldoInicial: 0,
   currency: '',
   loading: false,
   error: null
@@ -18,6 +19,9 @@ const expenseSlice = createSlice({
     setBalance: (state, action) => {
       state.balance = action.payload.amount
       state.currency = action.payload.currency
+      if (action.payload.saldoInicial !== undefined) {
+        state.saldoInicial = action.payload.saldoInicial
+      }
     },
     addExpense: (state, action) => {
       state.expenses.push(action.payload)

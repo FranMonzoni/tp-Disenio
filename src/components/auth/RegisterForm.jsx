@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { loginSuccess, loginFailure } from '../../features/auth/authSlice'
+import { db } from '../../firebase'
+import { doc, getDoc } from 'firebase/firestore'
+import { setBalance } from '../../features/expenses/expenseSlice'
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -80,8 +83,16 @@ const RegisterForm = () => {
       // Actualizar estado de autenticación
       dispatch(loginSuccess(newUser))
       
-      // Redirigir a saldo inicial
-      navigate('/initial-balance')
+      // Consultar saldo en Firestore
+      const balanceRef = doc(db, 'users', newUser.uid, 'profile', 'balance')
+      const balanceSnap = await getDoc(balanceRef)
+      if (balanceSnap.exists()) {
+        const { amount, currency, saldoInicial } = balanceSnap.data()
+        dispatch(setBalance({ amount, currency, saldoInicial }))
+        navigate('/inicio')
+      } else {
+        navigate('/initial-balance')
+      }
     } catch (error) {
       console.error('Error en el registro:', error)
       dispatch(loginFailure(error.message))

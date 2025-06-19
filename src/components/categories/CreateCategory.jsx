@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { addCustomCategory } from '../../features/expenses/expenseSlice'
 import { db } from '../../firebase'
 import { collection, addDoc } from 'firebase/firestore'
+import BotonInicio from '../BotonInicio'
 
 function CreateCategory() {
   const [categoryName, setCategoryName] = useState('')
@@ -43,6 +44,7 @@ function CreateCategory() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      <BotonInicio />
       <div className="max-w-md mx-auto">
         <h1 className="text-2xl font-bold text-center text-green-600 mb-6">Analizador de gastos</h1>
         <h2 className="text-xl font-semibold text-center text-gray-800 mb-6">CATEGORÍA: PERSONALIZADA</h2>

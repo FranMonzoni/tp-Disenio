@@ -6,6 +6,8 @@ import CategoryList from './components/categories/CategoryList'
 import CreateCategory from './components/categories/CreateCategory'
 import ExpenseEntry from './components/expenses/ExpenseEntry'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import Inicio from './components/Inicio'
+import Resumen from './components/Resumen'
 
 function App() {
   return (
@@ -43,6 +45,22 @@ function App() {
           element={
             <ProtectedRoute>
               <ExpenseEntry />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/inicio" 
+          element={
+            <ProtectedRoute>
+              <Inicio />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/resumen" 
+          element={
+            <ProtectedRoute>
+              <Resumen />
             </ProtectedRoute>
           } 
         />
